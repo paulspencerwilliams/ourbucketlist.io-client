@@ -1,0 +1,92 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Creates the S3 asset bucket and distributes it via CloudFormation.
+Parameters:
+  ApexDomainName:
+    Type: String
+    Description: Apex domain name for the site
+    AllowedPattern: (?!-)[a-zA-Z0-9-.]{1,63}(?<!-)
+    ConstraintDescription: must be a valid DNS zone name.
+  WWWDomainName:
+    Type: String
+    Description: www prefixed domain name for the site
+    AllowedPattern: (?!-)[a-zA-Z0-9-.]{1,63}(?<!-)
+    ConstraintDescription: must be a valid DNS zone name.
+  BucketName:
+    Type: String
+    Description: Asset bucket name
+    AllowedPattern: (?!-)[a-zA-Z0-9-.]{1,63}(?<!-)
+    ConstraintDescription: must be a valid DNS zone name.
+  AcmCertificateArn:
+    Type: String
+    Description: Arn for the SSL certificate
+    AllowedPattern: "arn:aws:acm:.*"
+Mappings:
+  RegionMap:
+    eu-west-2:
+      S3HostedZoneId: Z3GKZC51ZF0DB4
+      S3WebsiteEndpoint: s3-website.eu-west-2.amazonaws.com
+Resources:
+  AssetBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref 'BucketName'
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: 404.html
+    DeletionPolicy: Delete
+  WebsiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref 'AssetBucket'
+      PolicyDocument:
+        Statement:
+        - Sid: PublicReadForGetBucketObjects
+          Effect: Allow
+          Principal: '*'
+          Action: s3:GetObject
+          Resource: !Join ['', ['arn:aws:s3:::', !Ref 'AssetBucket', /*]]
+  CloudfrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    DependsOn:
+    - AssetBucket
+    Properties:
+      DistributionConfig:
+        Aliases:
+        - !Ref 'ApexDomainName'
+        - !Ref 'WWWDomainName'
+        Origins:
+        - DomainName: !Join [., [!Ref 'BucketName', !FindInMap [RegionMap, !Ref 'AWS::Region',
+                S3WebsiteEndpoint]]]
+          Id: S3Origin
+          CustomOriginConfig:
+            OriginProtocolPolicy: http-only
+        Enabled: true
+        HttpVersion: 'http2'
+        DefaultRootObject: index.html
+        DefaultCacheBehavior:
+          AllowedMethods:
+          - GET
+          - HEAD
+          MaxTTL: 600
+          Compress: true
+          TargetOriginId: S3Origin
+          ForwardedValues:
+            QueryString: true
+            Cookies:
+              Forward: none
+          ViewerProtocolPolicy: redirect-to-https
+        PriceClass: PriceClass_All
+        ViewerCertificate:
+          AcmCertificateArn: !Ref AcmCertificateArn
+          SslSupportMethod: sni-only
+Outputs:
+  BucketName:
+    Value: !Ref 'AssetBucket'
+    Description: Name of S3 bucket to hold website assets
+  CloudfrontEndpoint:
+    Value: !GetAtt [CloudfrontDistribution, DomainName]
+    Description: Cloudfront distribution end point
+  WWWDomain:
+    Value: !Ref 'WWWDomainName'
+    Description: www prefixed domain name
