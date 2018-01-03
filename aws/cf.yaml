@@ -68,6 +68,8 @@ Resources:
           AllowedMethods:
           - GET
           - HEAD
+          MinTTL: 400
+          DefaultTTL: 500
           MaxTTL: 600
           Compress: true
           TargetOriginId: S3Origin
