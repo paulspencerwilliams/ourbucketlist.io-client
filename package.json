@@ -24,7 +24,7 @@
     "test:lint:css": "stylelint \"**/*.css\"",
     "test:unit": "react-scripts test --env=jsdom",
     "test": "run-s test:**",
-    "deploy": "yarn build && aws s3 sync build/ s3://ourbucketlist.io --delete",
+    "deploy": "yarn build && aws s3 sync build/ s3://assets.ourbucketlist.io --delete",
     "eject": "react-scripts eject"
   }
 }
