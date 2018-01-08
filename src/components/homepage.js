@@ -1,5 +1,6 @@
 import React from 'react';
+import Recommendation from './recommendation';
 
-const Hello = () => <p>There's no functionality available just yet.</p>;
+const Hello = () => <Recommendation />;
 
 export default Hello;
