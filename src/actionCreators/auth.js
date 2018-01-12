@@ -29,3 +29,8 @@ export function signInAction({ email, password }, history) {
     }
   };
 }
+
+export function signOutAction() {
+  localStorage.clear();
+  return { type: UNAUTHENTICATED };
+}

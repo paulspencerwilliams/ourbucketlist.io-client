@@ -9,6 +9,7 @@ import Navbar from './components/navbar';
 import LandingPage from './components/landingpage';
 import Homepage from './components/homepage';
 import Signin from './components/auth/signin';
+import Signout from './components/auth/signout';
 import reducers from './reducers';
 
 const createStoreWithMiddleware = applyMiddleware(reduxThunk)(createStore);
@@ -21,6 +22,7 @@ ReactDOM.render(
         <Navbar />
         <Route exact path="/" component={LandingPage} />
         <Route path="/signin" component={Signin} />
+        <Route path="/signout" component={Signout} />
         <Route path="/homepage" component={Homepage} />
       </div>
     </Router>
