@@ -11,9 +11,16 @@ import Homepage from './components/homepage';
 import Signin from './components/auth/signin';
 import Signout from './components/auth/signout';
 import reducers from './reducers';
+import { AUTHENTICATED } from './actionCreators/auth';
 
 const createStoreWithMiddleware = applyMiddleware(reduxThunk)(createStore);
 const store = createStoreWithMiddleware(reducers);
+
+const user = localStorage.getItem('user');
+
+if (user) {
+  store.dispatch({ type: AUTHENTICATED });
+}
 
 ReactDOM.render(
   <Provider store={store}>
