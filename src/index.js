@@ -12,6 +12,7 @@ import Signin from './components/auth/signin';
 import Signout from './components/auth/signout';
 import reducers from './reducers';
 import { AUTHENTICATED } from './actionCreators/auth';
+import secured from './components/auth/secured';
 
 const createStoreWithMiddleware = applyMiddleware(reduxThunk)(createStore);
 const store = createStoreWithMiddleware(reducers);
@@ -29,8 +30,8 @@ ReactDOM.render(
         <Navbar />
         <Route exact path="/" component={LandingPage} />
         <Route path="/signin" component={Signin} />
-        <Route path="/signout" component={Signout} />
-        <Route path="/homepage" component={Homepage} />
+        <Route path="/signout" component={secured(Signout)} />
+        <Route path="/homepage" component={secured(Homepage)} />
       </div>
     </Router>
   </Provider>,
