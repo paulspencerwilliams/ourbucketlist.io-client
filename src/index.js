@@ -28,11 +28,15 @@ ReactDOM.render(
   <Provider store={store}>
     <Router>
       <div>
-        <Navbar />
-        <Route exact path="/" component={LandingPage} />
-        <Route path="/signin" component={Signin} />
-        <Route path="/signout" component={secured(Signout)} />
-        <Route path="/homepage" component={secured(Homepage)} />
+          <div className="container">
+              <Navbar />
+          </div>
+          <div className="container">
+              <Route exact path="/" component={LandingPage} />
+              <Route path="/signin" component={Signin} />
+              <Route path="/signout" component={secured(Signout)} />
+              <Route path="/homepage" component={secured(Homepage)} />
+          </div>
       </div>
     </Router>
   </Provider>,
